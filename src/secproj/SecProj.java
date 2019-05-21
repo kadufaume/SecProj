@@ -47,6 +47,9 @@ public class SecProj {
         totalReviewsPorPlataforma(tableOne);
         percentCriterioPorPlataforma(tableOne, "Great");
         mediaScorePorPlataforma(tableOne);
+        desvioPadraoPorPlataforma(tableOne);
+        melhorPiorJogoPorPlataforma(tableOne);
+        plataformaMelhorAvaliadaPorGenero(tableOne, "Racing");
 
     }
     
@@ -126,6 +129,93 @@ public class SecProj {
 
             System.out.println(contTotal + "\t" + k + " = " + media);
         }
+    }
+    
+    public static void desvioPadraoPorPlataforma(TreeMap<String, Item> table) {
+        System.out.println("\n\tDesvio Padrão por plataforma\n");
+        int cont;
+        int contTotal = 0;
+        Double score;
+        Double media;
+        ArrayList<Double> v = new ArrayList();
+        Double temp;
+        for (String k : table.keySet()) {
+            cont = 0;
+            score = 0.0;
+            for (int i = 0; i < table.get(k).getInfos().size(); i++) {
+                score += table.get(k).getInfos().get(i).getScore();
+                cont++;
+            }
+            media = score / cont;
+
+            for (int i = 0; i < table.get(k).getInfos().size(); i++) {
+                temp = ((table.get(k).getInfos().get(i).getScore()) - media) * ((table.get(k).getInfos().get(i).getScore()) - media);
+                v.add(temp);
+            }
+
+            Double variancia = 0.0;
+            for (int i = 0; i < v.size(); i++) {
+                variancia += v.get(i);
+            }
+
+            variancia = variancia / (v.size() - 1);
+
+            contTotal++;
+            DecimalFormat varPlatform = new DecimalFormat("#,##");
+            variancia = Double.valueOf(varPlatform.format(variancia));
+
+            System.out.println(contTotal + "\t" + k + " = " + variancia);
+        }
+    }
+
+    public static void melhorPiorJogoPorPlataforma(TreeMap<String, Item> table) {
+        System.out.println("\n\tMelhor e pior jogo por plataforma\n");
+        int cont = 0;
+        for (String k : table.keySet()) {
+            cont++;
+            System.out.println(cont + "\t" + k + "\n"
+                    + "\tMelhor" + " = " + table.get(k).getBest().getTitulo()
+                    + "\n\tPior" + " = " + table.get(k).getWorst().getTitulo() + "\n");
+        }
+    }
+
+    public static void plataformaMelhorAvaliadaPorGenero(TreeMap<String, Item> table, String genero) {
+        System.out.print("\n\tA plataforma melhor avaliada com jogos do gênero '"
+                + genero + "' foi: ");
+        TreeMap<String, Double> medias = new TreeMap();
+        String melhorAvaK = "";
+        Double melhorAvaV = 0.0;
+        int cont;
+        Double score;
+        Double media;
+        for (String k : table.keySet()) {
+            cont = 0;
+            score = 0.0;
+            for (int i = 0; i < table.get(k).getInfos().size(); i++) {
+                if (table.get(k).getInfos().get(i).getGenero().equals(genero)) {
+                    score += table.get(k).getInfos().get(i).getScore();
+                    cont++;
+                }
+            }
+            media = score / cont;
+            if (media > 0) {
+                medias.put(table.get(k).getInfos().get(0).getPlatform(), media);
+            }
+        }
+        for (String k : medias.keySet()) {
+            if (melhorAvaK.equals("")) {
+                melhorAvaK = k;
+                melhorAvaV = medias.get(k);
+            } else {
+                if (melhorAvaV <= medias.get(k)) {
+                    melhorAvaK = k;
+                    melhorAvaV = medias.get(k);
+                }
+                //medias.get(k).doubleValue();
+            }
+        }
+        System.out.println(melhorAvaK + "\n");
+        System.out.println("\tMÉDIA DE AVALIAÇÕES: " + melhorAvaV);
     }
     
 }
